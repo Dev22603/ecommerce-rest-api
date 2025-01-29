@@ -1,42 +1,40 @@
 // Backend\models\user.mjs
-export default (sequelize, DataTypes) => {
-	const User = sequelize.define("User", {
-		id: {
-			type: DataTypes.INTEGER,
-			primaryKey: true,
-			autoIncrement: true,
-		},
-		name: {
-			type: DataTypes.STRING(100),
-			allowNull: false,
-			validate: {
-				len: [2, 100],
-			},
-		},
-		email: {
-			type: DataTypes.STRING(100),
-			unique: true,
-			allowNull: false,
-			validate: {
-				isEmail: true,
-			},
-		},
-		password: {
-			type: DataTypes.STRING(100),
-			allowNull: false,
-			validate: {
-				len: [8, 100],
-			},
-		},
-		role: {
-			type: DataTypes.ENUM("admin", "customer"),
-			allowNull: false,
-		},
-		created_at: {
-			type: DataTypes.DATE,
-			defaultValue: DataTypes.NOW,
-		},
-	});
+import mongoose from "mongoose";
 
-	return User;
-};
+// Define the user schema
+const userSchema = new mongoose.Schema({
+	name: {
+		type: String,
+		required: true,
+		minlength: 2,
+		maxlength: 100,
+	},
+	email: {
+		type: String,
+		required: true,
+		unique: true,
+		match: [
+			/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
+			"Please fill a valid email address",
+		],
+	},
+	password: {
+		type: String,
+		required: true,
+		minlength: 8,
+	},
+	role: {
+		type: String,
+		enum: ["admin", "customer"],
+		required: true,
+	},
+	created_at: {
+		type: Date,
+		default: Date.now,
+	},
+});
+
+// Create the User model
+const User = mongoose.model("User", userSchema);
+
+export default User;

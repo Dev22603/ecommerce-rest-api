@@ -1,70 +1,56 @@
 // Backend\models\product.mjs
-export default (sequelize, DataTypes) => {
-	const Product = sequelize.define("Product", {
-		id: {
-			type: DataTypes.INTEGER,
-			primaryKey: true,
-			autoIncrement: true,
-		},
-		product_name: {
-			type: DataTypes.STRING(255),
-			allowNull: false,
-			validate: {
-				len: [2, 255],
-			},
-		},
-		ws_code: {
-			type: DataTypes.INTEGER,
-			unique: true,
-			allowNull: false,
-			validate: {
-				min: 0,
-			},
-		},
-		sales_price: {
-			type: DataTypes.INTEGER,
-			allowNull: false,
-			validate: {
-				min: 1,
-			},
-		},
-		mrp: {
-			type: DataTypes.INTEGER,
-			allowNull: false,
-			validate: {
-				min: 1,
-			},
-		},
-		package_size: {
-			type: DataTypes.INTEGER,
-			allowNull: false,
-			validate: {
-				min: 1,
-			},
-		},
-		images: {
-			type: DataTypes.ARRAY(DataTypes.TEXT),
-			defaultValue: [],
-		},
-		tags: {
-			type: DataTypes.ARRAY(DataTypes.TEXT),
-			defaultValue: [],
-		},
-		stock: {
-			type: DataTypes.INTEGER,
-			defaultValue: 0,
-			validate: {
-				min: 0,
-			},
-		},
-	});
+import mongoose from "mongoose";
 
-	Product.associate = (models) => {
-		Product.belongsTo(models.Category, {
-			foreignKey: "category_id",
-			onDelete: "CASCADE",
-		});
-	};
+// Define the product schema
+const productSchema = new mongoose.Schema({
+	product_name: {
+		type: String,
+		required: true,
+		minlength: 2,
+		maxlength: 255,
+	},
+	ws_code: {
+		type: Number,
+		required: true,
+		unique: true,
+		min: 0,
+	},
+	sales_price: {
+		type: Number,
+		required: true,
+		min: 1,
+	},
+	mrp: {
+		type: Number,
+		required: true,
+		min: 1,
+	},
+	package_size: {
+		type: Number,
+		required: true,
+		min: 1,
+	},
+	images: {
+		type: [String],
+		default: [],
+	},
+	tags: {
+		type: [String],
+		default: [],
+	},
+	stock: {
+		type: Number,
+		default: 0,
+		min: 0,
+	},
+	category_id: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Category", // Reference to the Category model
+		required: true,
+	},
+});
 
-	return Product;
-};
+// Create the Product model
+const Product = mongoose.model("Product", productSchema);
+
+export default Product;

@@ -1,33 +1,29 @@
-// Backend\models\orderItem.mjs
-export default (sequelize, DataTypes) => {
-	const OrderItem = sequelize.define("OrderItem", {
-		id: {
-			type: DataTypes.INTEGER,
-			primaryKey: true,
-			autoIncrement: true,
-		},
-		quantity: {
-			type: DataTypes.INTEGER,
-			allowNull: false,
-			validate: {
-				min: 1,
-			},
-		},
-		price: {
-			type: DataTypes.DECIMAL(10, 2),
-		},
-	});
+import mongoose from "mongoose";
 
-	OrderItem.associate = (models) => {
-		OrderItem.belongsTo(models.Order, {
-			foreignKey: "order_id",
-			onDelete: "CASCADE",
-		});
-		OrderItem.belongsTo(models.Product, {
-			foreignKey: "product_id",
-			onDelete: "CASCADE",
-		});
-	};
+// Define the order item schema
+const orderItemSchema = new mongoose.Schema({
+	quantity: {
+		type: Number,
+		required: true,
+		min: 1,
+	},
+	price: {
+		type: Number,
+		required: true,
+	},
+	order_id: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Order", // Reference to the Order model
+		required: true,
+	},
+	product_id: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Product", // Reference to the Product model
+		required: true,
+	},
+});
 
-	return OrderItem;
-};
+// Create the OrderItem model
+const OrderItem = mongoose.model("OrderItem", orderItemSchema);
+
+export default OrderItem;

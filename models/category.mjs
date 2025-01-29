@@ -1,16 +1,16 @@
 // Backend\models\category.mjs
-export default (sequelize, DataTypes) => {
-	const Category = sequelize.define("Category", {
-		id: {
-			type: DataTypes.INTEGER,
-			primaryKey: true,
-			autoIncrement: true,
-		},
-		category_name: {
-			type: DataTypes.STRING(255),
-			allowNull: false,
-		},
-	});
+import mongoose from "mongoose";
 
-	return Category;
-};
+// Define the category schema
+const categorySchema = new mongoose.Schema({
+	category_name: {
+		type: String,
+		required: true,
+		maxlength: 255,
+	},
+});
+
+// Create the Category model
+const Category = mongoose.model("Category", categorySchema);
+
+export default Category;

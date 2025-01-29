@@ -1,39 +1,37 @@
 // Backend\models\order.mjs
-export default (sequelize, DataTypes) => {
-	const Order = sequelize.define("Order", {
-		id: {
-			type: DataTypes.INTEGER,
-			primaryKey: true,
-			autoIncrement: true,
-		},
-		status: {
-			type: DataTypes.ENUM(
-				"Pending",
-				"Shipped",
-				"Completed",
-				"Cancelled"
-			),
-			defaultValue: "Pending",
-		},
-		total_amount: {
-			type: DataTypes.DECIMAL(10, 2),
-		},
-		created_at: {
-			type: DataTypes.DATE,
-			defaultValue: DataTypes.NOW,
-		},
-	});
 
-	Order.associate = (models) => {
-		Order.belongsTo(models.User, {
-			foreignKey: "user_id",
-			onDelete: "CASCADE",
-		});
-		Order.hasMany(models.OrderItem, {
-			foreignKey: "order_id",
-			onDelete: "CASCADE",
-		});
-	};
+import mongoose from "mongoose";
 
-	return Order;
-};
+// Define the order schema
+const orderSchema = new mongoose.Schema({
+	status: {
+		type: String,
+		enum: ["Pending", "Shipped", "Completed", "Cancelled"],
+		default: "Pending",
+	},
+	total_amount: {
+		type: Number,
+		required: true,
+	},
+	created_at: {
+		type: Date,
+		default: Date.now,
+	},
+	user_id: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "User", // Reference to the User model
+		required: true,
+	},
+	order_items: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "OrderItem", // Reference to the OrderItem model
+			required: true,
+		},
+	],
+});
+
+// Create the Order model
+const Order = mongoose.model("Order", orderSchema);
+
+export default Order;

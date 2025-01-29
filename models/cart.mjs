@@ -1,34 +1,30 @@
 // Backend\models\cart.mjs
-export default (sequelize, DataTypes) => {
-	const Cart = sequelize.define("Cart", {
-		id: {
-			type: DataTypes.INTEGER,
-			primaryKey: true,
-			autoIncrement: true,
-		},
-		quantity: {
-			type: DataTypes.INTEGER,
-			allowNull: false,
-			validate: {
-				min: 1,
-			},
-		},
-		created_at: {
-			type: DataTypes.DATE,
-			defaultValue: DataTypes.NOW,
-		},
-	});
+import mongoose from "mongoose";
 
-	Cart.associate = (models) => {
-		Cart.belongsTo(models.User, {
-			foreignKey: "user_id",
-			onDelete: "CASCADE",
-		});
-		Cart.belongsTo(models.Product, {
-			foreignKey: "product_id",
-			onDelete: "CASCADE",
-		});
-	};
+// Define the cart schema
+const cartSchema = new mongoose.Schema({
+	quantity: {
+		type: Number,
+		required: true,
+		min: 1,
+	},
+	created_at: {
+		type: Date,
+		default: Date.now,
+	},
+	user_id: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "User", // Reference to the User model
+		required: true,
+	},
+	product_id: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Product", // Reference to the Product model
+		required: true,
+	},
+});
 
-	return Cart;
-};
+// Create the Cart model
+const Cart = mongoose.model("Cart", cartSchema);
+
+export default Cart;
